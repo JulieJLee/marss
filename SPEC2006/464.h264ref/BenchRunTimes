@@ -1,0 +1,63 @@
+NUM: 1 Ran 464.h264ref with Opt "-O0" in 52953.000 ms
+NUM: 2 Ran 464.h264ref with Opt "-O0" in 53825.000 ms
+NUM: 3 Ran 464.h264ref with Opt "-O0" in 59195.000 ms
+NUM: 4 Ran 464.h264ref with Opt "-O0" in 52936.000 ms
+NUM: 5 Ran 464.h264ref with Opt "-O0" in 53108.000 ms
+NUM: 6 Ran 464.h264ref with Opt "-O0" in 53074.000 ms
+NUM: 7 Ran 464.h264ref with Opt "-O0" in 52953.000 ms
+NUM: 8 Ran 464.h264ref with Opt "-O0" in 52996.000 ms
+NUM: 9 Ran 464.h264ref with Opt "-O0" in 53182.000 ms
+NUM: 10 Ran 464.h264ref with Opt "-O0" in 53079.000 ms
+NUM: 1 Ran 464.h264ref with Opt "-O1" in 17591.000 ms
+NUM: 2 Ran 464.h264ref with Opt "-O1" in 17471.000 ms
+NUM: 3 Ran 464.h264ref with Opt "-O1" in 17478.000 ms
+NUM: 4 Ran 464.h264ref with Opt "-O1" in 17503.000 ms
+NUM: 5 Ran 464.h264ref with Opt "-O1" in 17487.000 ms
+NUM: 6 Ran 464.h264ref with Opt "-O1" in 17502.000 ms
+NUM: 7 Ran 464.h264ref with Opt "-O1" in 17509.000 ms
+NUM: 8 Ran 464.h264ref with Opt "-O1" in 17530.000 ms
+NUM: 9 Ran 464.h264ref with Opt "-O1" in 17502.000 ms
+NUM: 10 Ran 464.h264ref with Opt "-O1" in 17494.000 ms
+NUM: 1 Ran 464.h264ref with Opt "-O2" in 16806.000 ms
+NUM: 2 Ran 464.h264ref with Opt "-O2" in 16781.000 ms
+NUM: 3 Ran 464.h264ref with Opt "-O2" in 16806.000 ms
+NUM: 4 Ran 464.h264ref with Opt "-O2" in 16801.000 ms
+NUM: 5 Ran 464.h264ref with Opt "-O2" in 16782.000 ms
+NUM: 6 Ran 464.h264ref with Opt "-O2" in 16808.000 ms
+NUM: 7 Ran 464.h264ref with Opt "-O2" in 16798.000 ms
+NUM: 8 Ran 464.h264ref with Opt "-O2" in 16785.000 ms
+NUM: 9 Ran 464.h264ref with Opt "-O2" in 16820.000 ms
+NUM: 10 Ran 464.h264ref with Opt "-O2" in 16834.000 ms
+NUM: 1 Ran 464.h264ref with Opt "-O3" in 17138.000 ms
+NUM: 2 Ran 464.h264ref with Opt "-O3" in 17144.000 ms
+NUM: 3 Ran 464.h264ref with Opt "-O3" in 17263.000 ms
+NUM: 4 Ran 464.h264ref with Opt "-O3" in 17167.000 ms
+NUM: 5 Ran 464.h264ref with Opt "-O3" in 17183.000 ms
+NUM: 6 Ran 464.h264ref with Opt "-O3" in 17142.000 ms
+NUM: 7 Ran 464.h264ref with Opt "-O3" in 17137.000 ms
+NUM: 8 Ran 464.h264ref with Opt "-O3" in 17140.000 ms
+NUM: 9 Ran 464.h264ref with Opt "-O3" in 17137.000 ms
+NUM: 10 Ran 464.h264ref with Opt "-O3" in 17197.000 ms
+NUM: 1 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=2" in 17042.000 ms
+NUM: 2 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=2" in 17003.000 ms
+NUM: 3 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=2" in 17006.000 ms
+NUM: 4 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=2" in 17007.000 ms
+NUM: 5 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=2" in 17006.000 ms
+NUM: 6 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=2" in 17003.000 ms
+NUM: 7 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=2" in 17045.000 ms
+NUM: 8 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=2" in 17003.000 ms
+NUM: 9 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=2" in 17013.000 ms
+NUM: 10 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=2" in 17010.000 ms
+NUM: 1 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=4" in 17137.000 ms
+NUM: 2 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=4" in 17118.000 ms
+NUM: 3 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=4" in 17110.000 ms
+NUM: 4 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=4" in 17092.000 ms
+NUM: 5 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=4" in 17122.000 ms
+NUM: 6 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=4" in 17135.000 ms
+NUM: 7 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=4" in 17101.000 ms
+NUM: 8 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=4" in 17092.000 ms
+NUM: 9 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=4" in 17139.000 ms
+NUM: 10 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=4" in 17156.000 ms
+NUM: 1 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=8" in 17265.000 ms
+NUM: 2 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=8" in 17160.000 ms
+NUM: 3 Ran 464.h264ref with Opt "-O1 -fcse-follow-jumps -ftree-vrp -freorder-blocks -falign-functions -fcse-skip-blocks -ftree-pre -fsched-interblock -fstrict-aliasing -fcrossjumping -frerun-cse-after-loop -finline-functions -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -funroll-loops --param max-unroll-times=8" in 17232.000 ms

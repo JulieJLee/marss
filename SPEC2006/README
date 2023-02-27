@@ -1,0 +1,36 @@
+The assignment requires the experimentation with a selection of benchmarks
+originated from SPEC CPU2006 and MediaBench v2 suites.
+
+SPEC CPU2006 suite: 
+401.bzip2  
+429.mcf  
+433.milc  
+445.gobmk  
+456.hmmer  
+458.sjeng  
+462.libquantum
+464.h264ref  
+470.lbm  
+
+MediaBench Suite:
+h263dec  
+h263enc  
+mpeg2dec  
+mpeg2enc
+
+Every benchmark directory contains a source file (src), a data file (data)
+with the input data and a run.sh script that runs the benchmark. Each src
+directory contains a Makefile that automates the compilation. You can redefine
+the compiler flags with the CFLAGS variable.
+
+Please fill free to use your favorite scripting language to automate the
+experimental procedure. For time measurement you can use the GNU time, bash time 
+or time function calls and hardware counters if you write a measurement tool. 
+The selection of the tools and techniques is part of the experimental setup and
+every choice is considered "right" if it is justified in your report.
+
+
+For any problem please contact me at c.margiolas@ed.ac.uk with an e-mail subject
+starting with "COPT ASSIGNMENT".
+
+

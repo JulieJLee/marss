@@ -1,0 +1,13 @@
+NUM: 1 Compiled 401.bzip2 with Optimisation "-O1 -fschedule-insns2" in 1471.000  milleseconds
+NUM: 1 Compiled 429.mcf with Optimisation "-O1 -fschedule-insns2" in 633.000  milleseconds
+NUM: 1 Compiled 433.milc with Optimisation "-O1 -fschedule-insns2" in 3760.000  milleseconds
+NUM: 1 Compiled 445.gobmk with Optimisation "-O1 -fschedule-insns2" in 17938.000  milleseconds
+NUM: 1 Compiled 456.hmmer with Optimisation "-O1 -fschedule-insns2" in 7372.000  milleseconds
+NUM: 1 Compiled 458.sjeng with Optimisation "-O1 -fschedule-insns2" in 2520.000  milleseconds
+NUM: 1 Compiled 462.libquantum with Optimisation "-O1 -fschedule-insns2" in 1111.000  milleseconds
+NUM: 1 Compiled 464.h264ref with Optimisation "-O1 -fschedule-insns2" in 11103.000  milleseconds
+NUM: 1 Compiled 470.lbm with Optimisation "-O1 -fschedule-insns2" in 320.000  milleseconds
+NUM: 1 Compiled h263dec with Optimisation "-O1 -fschedule-insns2" in 1618.000  milleseconds
+NUM: 1 Compiled h263enc with Optimisation "-O1 -fschedule-insns2" in 1703.000  milleseconds
+NUM: 1 Compiled mpeg2dec with Optimisation "-O1 -fschedule-insns2" in 1314.000  milleseconds
+NUM: 1 Compiled mpeg2enc with Optimisation "-O1 -fschedule-insns2" in 7.000  milleseconds

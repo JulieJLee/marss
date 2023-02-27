@@ -1,0 +1,5 @@
+-logfile /hdd0/julie/results/SPEC2006_runbench/sjeng.log
+-stats /hdd0/julie/results/SPEC2006_runbench/sjeng.yml
+-run -kill-after-run -quiet
+-machine xeon_platinum_8253
+-corefreq 2200000000

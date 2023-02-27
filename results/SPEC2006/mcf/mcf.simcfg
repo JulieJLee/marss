@@ -1,0 +1,5 @@
+-logfile /hdd0/julie/results/SPEC2006/mcf/mcf.log
+-stats /hdd0/julie/results/SPEC2006/mcf/mcf.yml
+-run -kill-after-run -quiet
+-machine single_core
+-corefreq 2200000000

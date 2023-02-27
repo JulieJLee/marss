@@ -1,0 +1,13 @@
+NUM: 1 Ran 401.bzip2 with Opt "-O1 -fschedule-insns2" in 5646.000 ms
+NUM: 1 Ran 429.mcf with Opt "-O1 -fschedule-insns2" in 3409.000 ms
+NUM: 1 Ran 433.milc with Opt "-O1 -fschedule-insns2" in 24093.000 ms
+NUM: 1 Ran 445.gobmk with Opt "-O1 -fschedule-insns2" in 24509.000 ms
+NUM: 1 Ran 456.hmmer with Opt "-O1 -fschedule-insns2" in 4251.000 ms
+NUM: 1 Ran 458.sjeng with Opt "-O1 -fschedule-insns2" in 4924.000 ms
+NUM: 1 Ran 462.libquantum with Opt "-O1 -fschedule-insns2" in 2872.000 ms
+NUM: 1 Ran 464.h264ref with Opt "-O1 -fschedule-insns2" in 17602.000 ms
+NUM: 1 Ran 470.lbm with Opt "-O1 -fschedule-insns2" in 5708.000 ms
+NUM: 1 Ran h263dec with Opt "-O1 -fschedule-insns2" in 653.000 ms
+NUM: 1 Ran h263enc with Opt "-O1 -fschedule-insns2" in 4295.000 ms
+NUM: 1 Ran mpeg2dec with Opt "-O1 -fschedule-insns2" in 1234.000 ms
+NUM: 1 Ran mpeg2enc with Opt "-O1 -fschedule-insns2" in 13953.000 ms

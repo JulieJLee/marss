@@ -1,0 +1,5 @@
+-logfile test.log
+-corefreq 2200000000
+-stats test.yml
+-machine xeon_platinum_8253
+#-snapshot-cycles 100000

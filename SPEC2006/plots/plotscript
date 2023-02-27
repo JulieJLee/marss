@@ -1,0 +1,8 @@
+set terminal png
+set output 'out.png'
+set title "Dat"
+set xlabel "compile time"
+set ylabel "run time"
+set grid
+plot '401.bzip2.plot' with  lines smooth unique , '401.bzip2.plot' with labels
+
