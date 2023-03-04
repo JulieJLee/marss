@@ -762,7 +762,13 @@ bool CacheController::clear_entry_cb(void *arg)
 		}
 
 		queueEntry->request->decRefCounter();
+        /*
+        ofstream hist_file;
+        hist_file.open("/hdd0/julie/marss/hist_test.txt");
+        hist_file << queueEntry->request->get_history() << endl;
+        hist_file.close();
 		ADD_HISTORY_REM(queueEntry->request);
+        */
 		if(!queueEntry->annuled) {
 			if(pendingRequests_.list().count == 0) {
 				memdebug("Removing from pending request queue " <<

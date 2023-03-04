@@ -100,20 +100,6 @@ struct BaseCacheStats : public Statable
                   , hit(this)
                   , miss(this)
             {}
-
-            struct miss_sub : public Statable
-            {
-                StatObj<W64> set0;
-
-                miss_sub(const char *name, Statable *parent)
-                    : Statable(name, parent)
-                      , set0("0", this)
-                {}
-            };
-
-            miss_sub set0; 
-
-
         } count;
 
         struct stall : public Statable
