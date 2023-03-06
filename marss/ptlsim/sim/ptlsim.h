@@ -28,6 +28,7 @@ void user_process_terminated(int rc);
 
 ostream& print_user_context(ostream& os, const UserContext& ctx, int width = 4);
 
+
 static const int MAX_TRANSOP_BUFFER_SIZE = 4;
 
 struct PTLsimConfig;
@@ -68,6 +69,7 @@ struct PTLsimMachine : public Statable {
   static void removemachine(const char* name, PTLsimMachine* machine);
   static PTLsimMachine* getmachine(const char* name);
   static PTLsimMachine* getcurrent();
+  static void create_trace_file(char* controller_name);
 
   stringbuf machine_name;
   int (*handle_cpuid)(uint32_t index, uint32_t count, uint32_t *eax,
@@ -163,6 +165,10 @@ void synth_uops_for_bb(BasicBlock& bb);
 struct PTLsimStats;
 
 extern ofstream ptl_logfile;
+extern ofstream L1_I_logfile;
+extern ofstream L1_D_logfile;
+extern ofstream L2_logfile;
+extern ofstream L3_logfile;
 extern ofstream trace_mem_logfile;
 extern W64 sim_cycle;
 extern W64 user_insn_commits;
@@ -200,6 +206,8 @@ struct PTLsimConfig {
   // Logging
   bool quiet;
   stringbuf log_filename;
+  // log filename without extensions
+  //std::string log_filename_raw;
   W64 loglevel;
   W64 start_log_at_iteration;
   W64 start_log_at_rip;
@@ -210,6 +218,7 @@ struct PTLsimConfig {
   bool log_user_only;
   stringbuf dump_config_filename;
 
+  
   bool logMemory;
 
   bool dump_state_now;

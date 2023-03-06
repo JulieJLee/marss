@@ -181,8 +181,11 @@ void BaseMachine::dump_configuration(ostream& os) const
 		cores[i]->dump_configuration(*config_yaml);
 
 	/* Next is all controllers/caches */
-	foreach (i, controllers.count())
+	foreach (i, controllers.count()) {
 		controllers[i]->dump_configuration(*config_yaml);
+        //create_trace_file(std::string(controllers[i]->get_name()));
+        create_trace_file(controllers[i]->get_name());
+    }
 
 	/* Now dump all interconnections */
 	foreach (i, interconnects.count())

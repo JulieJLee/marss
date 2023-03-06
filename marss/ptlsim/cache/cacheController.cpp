@@ -612,6 +612,34 @@ bool CacheController::cache_access_cb(void *arg)
 				signal = &cacheMiss_;
 				delay = cacheAccessLatency_;
 				queueEntry->eventFlags[CACHE_MISS_EVENT]++;
+                
+                /* log physical address to a file */
+                W64 physAddress = queueEntry->request->get_physical_address();
+                //std::string path = "/hdd0/julie/results/test/" + std::string(get_name()) + ".csv";
+                //std::ofstream trace_file;
+                /*
+                trace_file.open("/hdd0/julie/results/test/test.csv");
+                trace_file << path << std::endl;
+                trace_file.close();
+                */
+                /*
+                trace_file.open(path);
+                trace_file << physAddress << std::endl;
+                trace_file.close();
+                */
+                
+                if (type_ == L1_I_CACHE) {
+                    L1_I_logfile << physAddress << endl;
+                }
+                else if (type_ == L1_D_CACHE) {
+                    L1_D_logfile << physAddress << endl;
+                }
+                else if (type_ == L2_CACHE) {
+                    L2_logfile << physAddress << endl;
+                }
+                else if (type_ == L3_CACHE) {
+                    L3_logfile << physAddress << endl;
+                }
 
 				if(type == MEMORY_OP_READ) {
 					N_STAT_UPDATE(new_stats.cpurequest.count.miss.read, ++,

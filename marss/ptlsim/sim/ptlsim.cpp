@@ -46,6 +46,12 @@ extern ConfigurationParser<PTLsimConfig> config;
 PTLsimMachine ptl_machine;
 
 ofstream ptl_logfile;
+// cache miss tracing 
+ofstream L1_I_logfile;
+ofstream L1_D_logfile;
+ofstream L2_logfile;
+ofstream L3_logfile;
+
 #ifdef TRACE_RIP
 ofstream ptl_rip_trace;
 #endif
@@ -1254,6 +1260,49 @@ static void dump_machine_configuration(PTLsimMachine *machine)
   }
 }
 
+static std::string strip_extension()
+{
+  std::string temp_name = std::string(config.log_filename); 
+  size_t lastindex = temp_name.find_last_of(".");
+  std::string stats_name = temp_name.erase(lastindex, 4);
+  return stats_name;
+}
+
+void PTLsimMachine::create_trace_file(char* controller_name)
+{
+  std::string temp_name = std::string(config.log_filename); 
+  size_t lastindex = temp_name.find_last_of(".");
+  std::string stats_name = temp_name.erase(lastindex, 4);
+
+  /*
+  ofstream *trace_file;
+  trace_file = new ofstream();
+  trace_file->open((stats_name + controller_name + ".csv"));
+  */
+  if (strstr(controller_name, "L1_I") != NULL) {
+    if (L1_I_logfile) L1_I_logfile.close();
+    /*
+    stringbuf oldname;
+    oldname << config.log_filename << ".backup";
+    sys_unlink(oldname);
+    sys_rename(config.log_filename, oldname);
+    */
+    L1_I_logfile.open((stats_name + "_" + std::string(controller_name) + ".csv"));
+  }
+  if (strstr(controller_name, "L1") != NULL) {
+    if (L1_D_logfile) L1_D_logfile.close();
+        L1_D_logfile.open((stats_name + "_" + std::string(controller_name) + ".csv"));
+  }
+  if (strstr(controller_name, "L2") != NULL) {
+    if (L2_logfile) L2_logfile.close();
+        L2_logfile.open((stats_name + "_" + std::string(controller_name) + ".csv"));
+  }
+  if (strstr(controller_name, "L3") != NULL) {
+    if (L3_logfile) L3_logfile.close();
+        L3_logfile.open((stats_name + "_" + std::string(controller_name) + ".csv"));
+  }
+}
+
 extern "C" uint8_t ptl_simulate() {
   PTLsimMachine* machine = NULL;
   char* machinename = config.core_name;
@@ -1290,6 +1339,8 @@ extern "C" uint8_t ptl_simulate() {
       ptl_logfile << "Stopping after " << config.stop_at_insns << " commits" << endl << flush;
       cerr << "Stopping after " << config.stop_at_insns << " commits" << endl << flush;
     }
+
+    //config.log_filename_raw = strip_extension();
 
     /* Dump Machine configuration */
     dump_machine_configuration(machine);
