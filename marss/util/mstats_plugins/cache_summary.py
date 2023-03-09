@@ -19,6 +19,7 @@ class CacheSummaryFilter(mstats.Filters):
         l1_filter_str = "base_machine::L1_.*"
         l2_filter_str = "base_machine::L2_.*"
         l3_filter_str = "base_machine::L3_.*"
+        ins_filter_str = "base_machine::xeon_plat_0_0::thread0::commit"
 
         if not options.node:
             options.node = []
@@ -26,6 +27,7 @@ class CacheSummaryFilter(mstats.Filters):
         options.node.append(l1_filter_str)
         options.node.append(l2_filter_str)
         options.node.append(l3_filter_str)
+        options.node.append(ins_filter_str)
 
         return stats
 
@@ -36,7 +38,7 @@ class CacheSummaryProcess(mstats.Process):
         parser.add_option("--cache-summary", action="store_true",
                 default=False, help="Print summary of cache stats")
 
-    def calc_cache_summary(self, node):
+    def calc_cache_summary(self, node, insns):
         # Node is cache staistics.
         # Find total access, total hit access, total miss access
         # Total snoop access (if any) etc. and store back in node
@@ -49,6 +51,8 @@ class CacheSummaryProcess(mstats.Process):
 
         miss = cpu_req['count']['miss']
         t_miss = miss['read'] + miss['write']
+
+        mpki = float(t_miss) / (float(insns) / 1000)
 
         t_access = t_hit + t_miss
 
@@ -64,7 +68,8 @@ class CacheSummaryProcess(mstats.Process):
                 'total_hit' : t_hit,
                 'total_miss' : t_miss,
                 'hit_ratio' : hit_ratio,
-                'miss_ratio' : miss_ratio
+                'miss_ratio' : miss_ratio,
+                'mpki' : mpki
                 }
 
 
@@ -77,10 +82,10 @@ class CacheSummaryProcess(mstats.Process):
         else:
             key = stat.keys()[0]
             base_m = stat[key]['base_machine']
-
+        insns = base_m['xeon_plat_0_0']['thread0']['commit']['insns']
         for key,val in base_m.iteritems():
             if 'L1_' in key or 'L2_' in key or 'L3_' in key:
-                self.calc_cache_summary(val)
+                self.calc_cache_summary(val, insns)
 
     def process(self, stats, options):
         if not options.cache_summary:
@@ -109,6 +114,8 @@ class CacheSummaryWriter(mstats.Writers):
             base_m = stat[key]['base_machine']
 
         print("st_name %s:" % st_name)
+        insns = base_m['xeon_plat_0_0']['thread0']['commit']['insns']
+        print("Total Instructions   : %10d" % insns)
         pfx = "  "
         for key in sorted(base_m.keys()):
             val = base_m[key]
@@ -123,6 +130,7 @@ class CacheSummaryWriter(mstats.Writers):
                     summary['hit_ratio']*100))
                 print("%sMiss Ratio   : %9.4f%%" % (cpfx,
                     summary['miss_ratio']*100))
+                print("%sMPKI   : %9.4f%%" % (cpfx, summary['mpki']))
 
     def write_csv(self, stat):
         # Write a simple summary with total access and ratio
@@ -132,6 +140,9 @@ class CacheSummaryWriter(mstats.Writers):
         else:
             key = stat.keys()[0]
             base_m = stat[key]['base_machine']
+
+        insns = base_m['xeon_plat_0_0']['thread0']['commit']['insns']
+        print("Total Instructions   : %10d" % insns)
 
         for key in sorted(base_m.keys()):
             val = base_m[key]
@@ -145,6 +156,7 @@ class CacheSummaryWriter(mstats.Writers):
                     summary['hit_ratio']*100))
                 print("%s,miss_ratio,%.4f" % (cpfx,
                     summary['miss_ratio']*100))
+                print("%s,mpki,%.4f" % (cpfx, summary['mpki']))
 
     def write(self, stats, options):
         if not options.cache_summary:
