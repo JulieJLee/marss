@@ -550,12 +550,29 @@ bool CacheController::cache_access_cb(void *arg)
 		bool kernel_req = queueEntry->request->is_kernel();
 		Signal *signal = NULL;
 		int delay;
+        /* log physical address to a file */
+        W64 physAddress = queueEntry->request->get_physical_address();
+
 		if(hit) {
 			if(type == MEMORY_OP_READ ||
 					type == MEMORY_OP_WRITE) {
 				signal = &cacheHit_;
 				delay = cacheAccessLatency_;
 				queueEntry->eventFlags[CACHE_HIT_EVENT]++;
+
+                if (type_ == L1_I_CACHE) {
+                    L1_I_trace << physAddress << ",H" << endl;
+                }
+                else if (type_ == L1_D_CACHE) {
+                    L1_D_trace << physAddress << ",H" << endl;
+                }
+                else if (type_ == L2_CACHE) {
+                    L2_trace << physAddress << ",H" << endl;
+                }
+                else if (type_ == L3_CACHE) {
+                    L3_trace << physAddress << ",H" << endl;
+                }
+
 
 				if(type == MEMORY_OP_READ) {
 					N_STAT_UPDATE(new_stats.cpurequest.count.hit.read.hit, ++,
@@ -613,8 +630,6 @@ bool CacheController::cache_access_cb(void *arg)
 				delay = cacheAccessLatency_;
 				queueEntry->eventFlags[CACHE_MISS_EVENT]++;
                 
-                /* log physical address to a file */
-                W64 physAddress = queueEntry->request->get_physical_address();
                 //std::string path = "/hdd0/julie/results/test/" + std::string(get_name()) + ".csv";
                 //std::ofstream trace_file;
                 /*
@@ -629,16 +644,16 @@ bool CacheController::cache_access_cb(void *arg)
                 */
                 
                 if (type_ == L1_I_CACHE) {
-                    L1_I_logfile << physAddress << endl;
+                    L1_I_trace << physAddress << ",M" << endl;
                 }
                 else if (type_ == L1_D_CACHE) {
-                    L1_D_logfile << physAddress << endl;
+                    L1_D_trace << physAddress << ",M" << endl;
                 }
                 else if (type_ == L2_CACHE) {
-                    L2_logfile << physAddress << endl;
+                    L2_trace << physAddress << ",M" << endl;
                 }
                 else if (type_ == L3_CACHE) {
-                    L3_logfile << physAddress << endl;
+                    L3_trace << physAddress << ",M" << endl;
                 }
 
 				if(type == MEMORY_OP_READ) {

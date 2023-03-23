@@ -2,4 +2,5 @@
 -corefreq 2200000000
 -stats test.yml
 -machine xeon_platinum_8253
+#-machine single_core
 #-snapshot-cycles 100000

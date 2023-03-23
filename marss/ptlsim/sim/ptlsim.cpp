@@ -46,11 +46,12 @@ extern ConfigurationParser<PTLsimConfig> config;
 PTLsimMachine ptl_machine;
 
 ofstream ptl_logfile;
-// cache miss tracing 
-ofstream L1_I_logfile;
-ofstream L1_D_logfile;
-ofstream L2_logfile;
-ofstream L3_logfile;
+// cache access tracing 
+ofstream L1_I_trace;
+ofstream L1_D_trace;
+ofstream L2_trace;
+ofstream L3_trace;
+
 
 #ifdef TRACE_RIP
 ofstream ptl_rip_trace;
@@ -1280,26 +1281,26 @@ void PTLsimMachine::create_trace_file(char* controller_name)
   trace_file->open((stats_name + controller_name + ".csv"));
   */
   if (strstr(controller_name, "L1_I") != NULL) {
-    if (L1_I_logfile) L1_I_logfile.close();
+    if (L1_I_trace) L1_I_trace.close();
     /*
     stringbuf oldname;
     oldname << config.log_filename << ".backup";
     sys_unlink(oldname);
     sys_rename(config.log_filename, oldname);
     */
-    L1_I_logfile.open((stats_name + "_" + std::string(controller_name) + ".csv"));
+    L1_I_trace.open((stats_name + "_" + std::string(controller_name) + ".csv"));
   }
   if (strstr(controller_name, "L1") != NULL) {
-    if (L1_D_logfile) L1_D_logfile.close();
-        L1_D_logfile.open((stats_name + "_" + std::string(controller_name) + ".csv"));
+    if (L1_D_trace) L1_D_trace.close();
+        L1_D_trace.open((stats_name + "_" + std::string(controller_name) + ".csv"));
   }
   if (strstr(controller_name, "L2") != NULL) {
-    if (L2_logfile) L2_logfile.close();
-        L2_logfile.open((stats_name + "_" + std::string(controller_name) + ".csv"));
+    if (L2_trace) L2_trace.close();
+        L2_trace.open((stats_name + "_" + std::string(controller_name) + ".csv"));
   }
   if (strstr(controller_name, "L3") != NULL) {
-    if (L3_logfile) L3_logfile.close();
-        L3_logfile.open((stats_name + "_" + std::string(controller_name) + ".csv"));
+    if (L3_trace) L3_trace.close();
+        L3_trace.open((stats_name + "_" + std::string(controller_name) + ".csv"));
   }
 }
 

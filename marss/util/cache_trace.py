@@ -4,6 +4,7 @@
 import csv
 import sys
 import os, glob
+import numpy as np
 
 from argparse import ArgumentParser
 from collections import defaultdict
@@ -25,7 +26,7 @@ def extract_info(filename):
     return app_name, cache_type
 
 
-# setup the mask and miss list necessary to track misses per set
+# setup the mask and miss arr necessary to track misses per set
 def setup_parse(filename, cache_type):
     # want to track misses per sets
     # number of bits necessary for offset, set, tag
@@ -34,9 +35,10 @@ def setup_parse(filename, cache_type):
    
     tag = addr_len - offset - set
 
-    # keep list where value in index of list = number of misses in set of same index
-    s_ds = [0] * (2**set)
-    a_ds = defaultdict(int)
+    # keep array where value in index of array = number of misses in set of same index
+    #set_list = [0] * (2**set)
+    set_arr = np.zeros((2**set,), dtype=int)
+    addr_dict = defaultdict(int)
 
     # okay i'm gonna use a hacky way of generating my mask,
     # by just taking a really long binary number of length 20 and shifting it
@@ -44,68 +46,103 @@ def setup_parse(filename, cache_type):
     mask = 0b11111111111111111111
     mask >>= 20 - set
 
-    return mask, s_ds, a_ds
+    return mask, set_arr, addr_dict
 
+# since the parsed data as array type is too large, 
+# cluster the results into num_clusters
+def bin_result(arr, num_bins):
+    [freq, bins] = np.histogram(arr, num_bins)
+    #data = zip(*np.histogram(set_arr, num_bins))
+    #np.savetxt('test.csv', list(data), fmt='%d', delimiter=',', header='frequency, bins')
+    return [freq, bins]
+
+
+    
+# since the parsed data as dict type is too large, 
+# cluster the results 
+#def cluster_dict_result(addr_dict):
 
 # read file containing address trace and extract
-# information into s_ds, a_ds, or both
-def read_file(filename, mask, s_ds, a_ds):
-    # read input csv, fill list of misses
+# information into set_arr, addr_dict, or both
+def read_file(filename, mask, set_arr, addr_dict):
+    # read input csv, fill arr of misses
     with open(filename) as input_csv:
         csv_reader = csv.reader(input_csv)
         for row in csv_reader:
             if "s" in args.parse_type:
-                s_ds[((int(row[0]) >> offset) & mask)] += 1
+                set_arr[((int(row[0]) >> offset) & mask)] += 1
             if "a" in args.parse_type:
-                a_ds[(int(row[0]) >> offset)] += 1
+                addr_dict[(int(row[0]) >> offset)] += 1
         input_csv.close()
-    return s_ds, a_ds
+    return set_arr, addr_dict
 
-# write ds per set to a csv,
+# write result to a csv (ds for datastructure)
 # where the name of the file is the application
-def write_file(app_name, cache_type, ds):
+def write_file(output_filename, cache_type, ds):
     # write result to a new csv
-    #output_path = '/home/jiwonl4/School/SP2023/ECE499/marss/parse_py_test/'
-    #output_filename = os.path.join(output_path, filename.partition('_')[0] + '_trace.csv')
-    if isinstance(ds, list):
-        output_filename = app_name + '_mps.csv'
-    else: 
-        output_filename = app_name + '_mpa.csv'
-        fields = ['Address', 'Miss Count']
-
-    print("Writing output to: ", output_filename)
     with open(output_filename, 'a', newline='') as output_csv:
         #get just the level of cache
         writer = csv.writer(output_csv)
         writer.writerow([cache_type])
-        if isinstance(ds, list):
+
+        if isinstance(ds, np.ndarray):
             writer.writerow(ds)
+
+        elif isinstance(ds, list):
+            writer.writerows(ds)
+            #output_csv.close()
+            #with open(output_filename, 'ab') as output_csv:
+            #    np.savetxt(output_csv, ds, fmt='%d', delimiter=',')
+
         else:
             for key, value in ds.items():
                 writer.writerow([key, value])
         output_csv.close()
 
 def parse_file(filename):
+    print("Parsing: ", filename)
     # extract the application name and cache type from the filename
     app_name, cache_type = extract_info(os.path.basename(filename))
 
-    mask, s_ds, a_ds = setup_parse(filename, cache_type)
-    s_ds, a_ds = read_file(filename, mask, s_ds, a_ds)
+    mask, set_arr, addr_dict = setup_parse(filename, cache_type)
+    set_arr, addr_dict = read_file(filename, mask, set_arr, addr_dict)
+
+    # determine output file name
     if "s" in args.parse_type:
-        write_file(app_name, cache_type, s_ds)
+        if args.process == 'n':
+            output_filename = app_name + '_mps_raw.csv'
+            write_file(output_filename, cache_type, set_arr)
+        else:
+            output_filename = app_name + '_mps_pr.csv'
+            set_arr_process = bin_result(set_arr, 4)
+            write_file(output_filename, cache_type, set_arr_process)
     if "a" in args.parse_type:
-        write_file(app_name, cache_type, a_ds)
+        if args.process == 'n':
+            output_filename = app_name + '_mpa_raw.csv'
+            write_file(output_filename, cache_type, addr_dict)
+        else:
+            output_filename = app_name + '_mpa_pr.csv'
+            addr_dict_values = np.array(list(addr_dict.values()))
+            addr_dict_process = bin_result(addr_dict_values, 4)
+            write_file(output_filename, cache_type, addr_dict_process)
+
+    print("Writing output to: ", output_filename)
+
+    #if "s" in args.parse_type:
+    #    write_file(output_filename, cache_type, set_arr)
+    #if "a" in args.parse_type:
+    #    write_file(output_filename, cache_type, addr_dict)
 
 
 # parse cache trace for all csvs in a directory
 def parse_all_files():
     for filename in glob.glob(os.path.join(args.dirpath, '*L*.csv')):
-        print("Parsing: ", filename)
         parse_file(filename)
 
 def setup_options():
     arg = ArgumentParser()
     arg.add_argument("parse_type")
+    arg.add_argument("process")
     arg.add_argument("dirpath")
     arg.add_argument("L1_set")
     arg.add_argument("L2_set")
@@ -122,5 +159,6 @@ if __name__ == "__main__":
     offset = 6 
 
     parse_all_files()
+    #parse_file('./results/bzip_L1.csv')
     # else if args.parse_type == "address":
 

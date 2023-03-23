@@ -165,10 +165,10 @@ void synth_uops_for_bb(BasicBlock& bb);
 struct PTLsimStats;
 
 extern ofstream ptl_logfile;
-extern ofstream L1_I_logfile;
-extern ofstream L1_D_logfile;
-extern ofstream L2_logfile;
-extern ofstream L3_logfile;
+extern ofstream L1_I_trace;
+extern ofstream L1_D_trace;
+extern ofstream L2_trace;
+extern ofstream L3_trace;
 extern ofstream trace_mem_logfile;
 extern W64 sim_cycle;
 extern W64 user_insn_commits;
