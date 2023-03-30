@@ -1,7 +1,7 @@
 #!/usr/bin/env python3 
 
 import csv
-import os
+import os, glob
 import numpy as np
 
 from argparse import ArgumentParser
@@ -38,8 +38,15 @@ class LRUSet:
     def clear(self) -> None:
         self.set.clear()
 
+def extract_info(filename):
+    file_without_ext = os.path.splitext(filename)[0]
+    app_name = file_without_ext.partition('_')[0]
+    cache_type = file_without_ext.partition('_')[2]
+    return app_name, cache_type
+
 def setup_options():
    arg = ArgumentParser() 
+   arg.add_argument("dirpath")
    arg.add_argument("num_sets", type=int)
    arg.add_argument("associativity", type=int)
    arg.add_argument("line_size", type=int)
@@ -67,7 +74,7 @@ def setup_index():
 
 # read file containing address trace and extract 
 # information into set_arr, addr_dict, or both 
-def read_file(filename, index_mask, index_b_len, tag_shift, offset_shift):
+def read_file(filename, index_mask, index_b_len, tag_shift, offset_shift, output_file):
     # read input csv, fill arr of misses 
     with open(filename) as input_csv:
         csv_reader = csv.reader(input_csv)
@@ -81,6 +88,23 @@ def read_file(filename, index_mask, index_b_len, tag_shift, offset_shift):
                 output_file.write(row[0] + ",M\n")    
             #print("Set Contents: ", cache[(addr >> offset_shift) & index_mask].set)
 
+def parse_file(filename):
+    print("Parsing: ", filename)
+
+    app_name, cache_type = extract_info(os.path.basename(filename))
+    output_filename = app_name + "_sim.csv"
+    print("Writing output to: ", output_filename)
+
+    output_file = open(output_filename, "a")
+    read_file(filename, index_mask, index_b_len, tag_shift, offset_shift, output_file)
+    output_file.close()
+
+
+def parse_all_files():
+    print(args.dirpath)
+    for filename in glob.glob(os.path.join(args.dirpath, '*L3*.csv')):
+        parse_file(filename)
+
 if __name__ == "__main__":
     opt = setup_options() 
 
@@ -92,10 +116,14 @@ if __name__ == "__main__":
 
     index_mask, index_b_len, tag_shift, offset_shift = setup_index()
 
-    filename = "./results/bzip_L3_0.csv"
+    parse_all_files()
+
+    #filename = "./results/bzip_L3_0.csv"
     #filename = "./results/test.csv"
+    #filename = "/hdd0/julie/results/SPEC2006_runbench4/lbm_L3_0.csv"
 
-    read_file(filename, index_mask, index_b_len, tag_shift, offset_shift)
+    #output_file = open("lbm_sim.csv", "a")
 
-    output_file = open("test.csv", "a")
-    output_file.close()
+    #read_file(filename, index_mask, index_b_len, tag_shift, offset_shift)
+
+    #output_file.close()

@@ -221,7 +221,8 @@ if __name__ == "__main__":
     addr_len = 64
     offset = 6 
 
-    parse_all_files()
+    #parse_all_files()
+    parse_file(args.dirpath + 'libquantum_L3_0.csv')
     #parse_file('./results/bzip_L3_0.csv')
     #parse_file('./results/test_L3.csv')
     # else if args.parse_type == "address":
