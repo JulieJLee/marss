@@ -170,8 +170,8 @@ def parse_file(filename):
     # statistics parsing
     stat_output = app_name + "_stat" + "_" + str(counter) + ".csv" 
     total_access = hit_ctr + miss_ctr
-    hit_ratio = float(hit_ctr) / float(total_access)
-    miss_ratio = float(miss_ctr) / float(total_access)
+    hit_ratio = (float(hit_ctr) / float(total_access)) * 100
+    miss_ratio = (float(miss_ctr) / float(total_access)) * 100
 
     stat_summary = {
             'total_hit' : hit_ctr,

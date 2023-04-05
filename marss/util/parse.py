@@ -65,6 +65,12 @@ def pdf(arr):
     pdf = arr / np.sum(arr)
     return range(len(arr)), pdf
 
+def sorted_pdf(arr):
+    arr_sorted = np.sort(arr)[::-1]
+    idx_sorted = np.argsort(arr)[::-1]
+    sorted_pdf = arr_sorted / np.sum(arr_sorted)
+    return range(len(arr_sorted)), sorted_pdf
+
 def cdf(arr):
     arr_sorted = np.sort(arr)[::-1]
     cumsum = np.cumsum(arr_sorted)  
@@ -129,8 +135,8 @@ def parse_file(filename):
             output_filename = app_name + '_mps_pr.csv'
             output_pngname = app_name + '_set.png'
 
-            cdf_x, cdf_y = cdf(set_arr)
             pdf_x, pdf_y = pdf(set_arr)
+            sorted_pdf_x, sorted_pdf_y = sorted_pdf(set_arr)
 
             fig, axs = plt.subplots(1, 2, figsize=(16,6))
 
@@ -140,8 +146,8 @@ def parse_file(filename):
             axs[0].set_ylabel('Percentage of Total Cache Misses')
             axs[0].grid(True)
 
-            axs[1].set_title('CDF')
-            axs[1].plot(cdf_x, cdf_y)
+            axs[1].set_title('Sorted PDF')
+            axs[1].plot(sorted_pdf_x, sorted_pdf_y)
             axs[1].set_xlabel('Sets Sorted in Descending Order of Misses')
             axs[1].set_ylabel('Percentage of Total Cache Misses')
             axs[1].grid(True)
@@ -165,8 +171,8 @@ def parse_file(filename):
             #addr_dict_process = bin_result(addr_dict_values, 4)
             #write_file(output_filename, cache_type, addr_dict_process)
         
-            cdf_x, cdf_y = cdf(addr_dict_values)
             pdf_x, pdf_y = pdf(addr_dict_values)
+            sorted_pdf_x, sorted_pdf_y = sorted_pdf(addr_dict_values)
 
             fig, axs = plt.subplots(1, 2, figsize=(16,6))
 
@@ -176,8 +182,8 @@ def parse_file(filename):
             axs[0].set_ylabel('Percentage of Total Cache Misses')
             axs[0].grid(True)
 
-            axs[1].set_title('CDF')
-            axs[1].plot(cdf_x, cdf_y)
+            axs[1].set_title('Sorted PDF')
+            axs[1].plot(sorted_pdf_x, sorted_pdf_y)
             axs[1].set_xlabel('Addresses Sorted in Descending Order of Misses')
             axs[1].set_ylabel('Percentage of Total Cache Misses')
             axs[1].grid(True)
@@ -218,12 +224,12 @@ if __name__ == "__main__":
 
     args = opt.parse_args()
 
-    addr_len = 64
+    addr_len = 40
     offset = 6 
 
     #parse_all_files()
-    parse_file(args.dirpath + 'libquantum_L3_0.csv')
-    #parse_file('./results/bzip_L3_0.csv')
+    #parse_file(args.dirpath + 'libquantum_L3_0.csv')
+    parse_file('./results/bzip_L3_0.csv')
     #parse_file('./results/test_L3.csv')
     # else if args.parse_type == "address":
 
