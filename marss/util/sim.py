@@ -166,7 +166,7 @@ def parse_file(filename):
     sim_output.close()
 
     # statistics parsing
-    stat_output = app_name + "_stat" + "_" + str(counter) + ".csv" 
+    stat_output = app_name + "_stat" + "_" + str(counter).zfill(2) + ".csv" 
     total_access = hit_ctr + miss_ctr
     hit_ratio = (float(hit_ctr) / float(total_access)) * 100
     miss_ratio = (float(miss_ctr) / float(total_access)) * 100
@@ -189,7 +189,7 @@ def parse_file(filename):
     stat.close()
         
 
-    plot_output = app_name + "_plot" + "_" + str(counter) + ".png" 
+    plot_output = app_name + "_plot" + "_" + str(counter).zfill(2) + ".png" 
     pdf_x, pdf_y = pdf(set_arr)
     sorted_pdf_x, sorted_pdf_y = sorted_pdf(set_arr)
 
