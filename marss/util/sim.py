@@ -99,8 +99,6 @@ def read_file(filename, set_bit_pos, set_bit_len, tag_bit_pos, offset_bit_len, o
     global miss_ctr
     # read input csv, fill arr of misses 
     with open(filename) as input_csv:
-        output_file.write("Set bits: " + args.set_bits + "\n")
-        output_file.write("Associativity: " + str(args.associativity) + "\n")
         csv_reader = csv.reader(input_csv)
         for row in csv_reader:
             addr = int(row[0])
@@ -155,11 +153,11 @@ def parse_file(filename):
     app_name, cache_type = extract_info(os.path.basename(filename))
 
     # generate unique filename
-    sim_output = app_name + "_sim_0.csv"
+    sim_output = app_name + "_sim_00.csv"
     counter = 0
     while os.path.isfile(sim_output):
         counter += 1
-        sim_output  = app_name + "_sim" + "_" + str(counter) + ".csv"
+        sim_output  = app_name + "_sim" + "_" + str(counter).zfill(2) + ".csv"
 
     print("Writing output to: ", sim_output)
 
@@ -182,6 +180,8 @@ def parse_file(filename):
             }
 
     with open(stat_output, 'a', newline='') as stat:
+        stat.write("Set bits: " + args.set_bits + "\n")
+        stat.write("Associativity: " + str(args.associativity) + "\n")
         writer = csv.writer(stat)
         for key, value in stat_summary.items():
             writer.writerow([key, value])
