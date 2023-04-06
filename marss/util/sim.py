@@ -118,13 +118,13 @@ def read_file(filename, set_bit_pos, set_bit_len, tag_bit_pos, offset_bit_len, o
             #print("Tag Value: ", tag_val)
             # hit
             if cache[set_index].update(tag_val):
-                output_file.write(row[0] + ",H\n")    
+                #output_file.write(row[0] + ",H\n")    
                 # statistics counter
                 hit_ctr += 1
 
             # miss
             else:
-                output_file.write(row[0] + ",M\n")    
+                #output_file.write(row[0] + ",M\n")    
                 # statistics counters
                 miss_ctr += 1
                 set_arr[set_index] += 1
