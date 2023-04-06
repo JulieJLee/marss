@@ -131,13 +131,13 @@ def read_file(filename, set_bit_pos, set_bit_len, tag_bit_pos, offset_bit_len, o
                 addr_dict[addr] += 1
 
 def pdf(arr):
-    pdf = arr / np.sum(arr)
+    pdf = arr / np.sum(arr) * 100
     return range(len(arr)), pdf
 
 def sorted_pdf(arr):     
     arr_sorted = np.sort(arr)[::-1]     
     idx_sorted = np.argsort(arr)[::-1]     
-    sorted_pdf = arr_sorted / np.sum(arr_sorted)     
+    sorted_pdf = arr_sorted / np.sum(arr_sorted) * 100
     return range(len(arr_sorted)), sorted_pdf 
 
 def cdf(arr):     
@@ -197,13 +197,13 @@ def parse_file(filename):
     axs[0,0].set_title('PDF')             
     axs[0,0].plot(pdf_x, pdf_y)             
     axs[0,0].set_xlabel('Sets')             
-    axs[0,0].set_ylabel('Percentage of Total Cache Misses')             
+    axs[0,0].set_ylabel('% of Total Cache Misses')             
     axs[0,0].grid(True)             
 
     axs[0,1].set_title('Sorted PDF')             
     axs[0,1].plot(sorted_pdf_x, sorted_pdf_y)             
     axs[0,1].set_xlabel('Sets Sorted in Descending Order of Misses')             
-    axs[0,1].set_ylabel('Percentage of Total Cache Misses')             
+    axs[0,1].set_ylabel('% of Total Cache Misses')             
     axs[0,1].grid(True)             
 
     addr_dict_values = np.array(list(addr_dict.values()))
@@ -213,13 +213,13 @@ def parse_file(filename):
     axs[1,0].set_title('PDF')             
     axs[1,0].plot(pdf_x, pdf_y)             
     axs[1,0].set_xlabel('Addresses')             
-    axs[1,0].set_ylabel('Percentage of Total Cache Misses')             
+    axs[1,0].set_ylabel('% of Total Cache Misses')             
     axs[1,0].grid(True)             
 
     axs[1,1].set_title('Sorted PDF')             
     axs[1,1].plot(sorted_pdf_x, sorted_pdf_y)             
     axs[1,1].set_xlabel('Addresses Sorted in Descending Order of Misses')             
-    axs[1,1].set_ylabel('Percentage of Total Cache Misses')             
+    axs[1,1].set_ylabel('% of Total Cache Misses')             
     axs[1,1].grid(True)             
 
     fig.suptitle(app_name)             
