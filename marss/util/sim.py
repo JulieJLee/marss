@@ -43,6 +43,10 @@ class LRUSet:
     def clear(self) -> None:
         self.set.clear()
 
+    
+def output_filename(app_name, cache_type, data_type, counter, ext):
+    return app_name + "_" + cache_type + "_" + data_type + "_" + str(counter).zfill(2) + "." + ext
+
 def extract_info(filename):
     file_without_ext = os.path.splitext(filename)[0]
     app_name = file_without_ext.partition('_')[0]
@@ -124,7 +128,7 @@ def read_file(filename, set_bit_pos, set_bit_len, tag_bit_pos, offset_bit_len, o
 
             # miss
             else:
-                #output_file.write(row[0] + ",M\n")    
+                output_file.write(row[0] + ",M\n")    
                 # statistics counters
                 miss_ctr += 1
                 set_arr[set_index] += 1
@@ -136,7 +140,6 @@ def pdf(arr):
 
 def sorted_pdf(arr):     
     arr_sorted = np.sort(arr)[::-1]     
-    idx_sorted = np.argsort(arr)[::-1]     
     sorted_pdf = arr_sorted / np.sum(arr_sorted) * 100
     return range(len(arr_sorted)), sorted_pdf 
 
@@ -146,6 +149,12 @@ def cdf(arr):
     cdf = (cumsum / cumsum[-1]) * 100            
     return range(len(arr_sorted)), cdf  
 
+def quartile(cdf):
+    first = (sum(cdf <= 25) / len(cdf)) * 100
+    second = (sum(cdf <= 50) / len(cdf)) * 100
+    third = (sum(cdf <= 75) / len(cdf)) * 100
+    return first, second, third
+    
 
 def parse_file(filename):
     print("Parsing: ", filename)
@@ -153,11 +162,11 @@ def parse_file(filename):
     app_name, cache_type = extract_info(os.path.basename(filename))
 
     # generate unique filename
-    sim_output = app_name + "_sim_00.csv"
     counter = 0
+    sim_output = output_filename(app_name, cache_type, "sim", counter, "csv")
     while os.path.isfile(sim_output):
         counter += 1
-        sim_output  = app_name + "_sim" + "_" + str(counter).zfill(2) + ".csv"
+        sim_output = output_filename(app_name, cache_type, "sim", counter, "csv")
 
     print("Writing output to: ", sim_output)
 
@@ -166,17 +175,33 @@ def parse_file(filename):
     sim_output.close()
 
     # statistics parsing
-    stat_output = app_name + "_stat" + "_" + str(counter).zfill(2) + ".csv" 
+    stat_output = app_name + "_" + cache_type + "_stat" + "_" + str(counter).zfill(2) + ".csv" 
+    stat_output = output_filename(app_name, cache_type, "stat", counter, "csv")
+    print("Writing output to: ", stat_output)
+
     total_access = hit_ctr + miss_ctr
     hit_ratio = (float(hit_ctr) / float(total_access)) * 100
     miss_ratio = (float(miss_ctr) / float(total_access)) * 100
 
+    set_cdf_x, set_cdf_y = cdf(set_arr)
+    set_first, set_second, set_third = quartile(set_cdf_y)
+
+    addr_dict_values = np.array(list(addr_dict.values()))
+    addr_cdf_x, addr_cdf_y = cdf(addr_dict_values)
+    addr_first, addr_second, addr_third = quartile(addr_cdf_y)
+    
     stat_summary = {
             'total_hit' : hit_ctr,
             'total_miss' : miss_ctr,
             'total_access' : total_access,
             'hit_ratio' : hit_ratio,
-            'miss_ratio' : miss_ratio
+            'miss_ratio' : miss_ratio,
+            'set_25%' : set_first,
+            'set_50%' : set_second,
+            'set_75%' : set_third,
+            'addr_25%' : addr_first,
+            'addr_50%' : addr_second,
+            'addr_75%' : addr_third
             }
 
     with open(stat_output, 'a', newline='') as stat:
@@ -189,7 +214,10 @@ def parse_file(filename):
     stat.close()
         
 
-    plot_output = app_name + "_plot" + "_" + str(counter).zfill(2) + ".png" 
+    #plot_output = app_name + "_" + cache_type + "_plot" + "_" + str(counter).zfill(2) + ".png" 
+    plot_output = output_filename(app_name, cache_type, "plot", counter, "png")
+    print("Writing output to: ", plot_output)
+
     pdf_x, pdf_y = pdf(set_arr)
     sorted_pdf_x, sorted_pdf_y = sorted_pdf(set_arr)
 
@@ -198,15 +226,17 @@ def parse_file(filename):
     axs[0,0].plot(pdf_x, pdf_y)             
     axs[0,0].set_xlabel('Sets')             
     axs[0,0].set_ylabel('% of Total Cache Misses')             
+    axs[0,0].set_xlim([0,pdf_x[-1]])
     axs[0,0].grid(True)             
 
     axs[0,1].set_title('Sorted PDF')             
     axs[0,1].plot(sorted_pdf_x, sorted_pdf_y)             
     axs[0,1].set_xlabel('Sets Sorted in Descending Order of Misses')             
     axs[0,1].set_ylabel('% of Total Cache Misses')             
+    axs[0,1].set_xlim([0,sorted_pdf_x[-1]])
+    axs[0,0].grid(True)             
     axs[0,1].grid(True)             
 
-    addr_dict_values = np.array(list(addr_dict.values()))
     pdf_x, pdf_y = pdf(addr_dict_values)
     sorted_pdf_x, sorted_pdf_y = sorted_pdf(addr_dict_values)
 
@@ -214,12 +244,14 @@ def parse_file(filename):
     axs[1,0].plot(pdf_x, pdf_y)             
     axs[1,0].set_xlabel('Addresses')             
     axs[1,0].set_ylabel('% of Total Cache Misses')             
+    axs[1,0].set_xlim([0,pdf_x[-1]])
     axs[1,0].grid(True)             
 
     axs[1,1].set_title('Sorted PDF')             
     axs[1,1].plot(sorted_pdf_x, sorted_pdf_y)             
     axs[1,1].set_xlabel('Addresses Sorted in Descending Order of Misses')             
     axs[1,1].set_ylabel('% of Total Cache Misses')             
+    axs[1,1].set_xlim([0,sorted_pdf_x[-1]])
     axs[1,1].grid(True)             
 
     fig.suptitle(app_name)             
@@ -230,7 +262,7 @@ def parse_file(filename):
 
 def parse_all_files():
     print(args.dirpath)
-    for filename in glob.glob(os.path.join(args.dirpath, '*L3*.csv')):
+    for filename in glob.glob(os.path.join(args.dirpath, '*L*.csv')):
         parse_file(filename)
 
 if __name__ == "__main__":
