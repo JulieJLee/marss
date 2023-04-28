@@ -3,6 +3,7 @@
 import csv
 import os, glob
 import numpy as np
+import config
 import matplotlib
 matplotlib.use('Agg')
 
@@ -19,26 +20,30 @@ class LRUSet:
         self.capacity = capacity
 
     # return whether latest access was a hit (true)
-    # key = tag, value = either dirty or number of times line has been accessed?
-    #   dirty is only useful for performance reasons
-    #   for now, let's go with number of times
-    def update(self, key: int) -> bool:
+    # key = tag, value = dirty
+    def update(self, key: int, dirty: bool) -> (bool, int):
+        hit = False
+        victim_addr = -1
         # miss
         if key not in self.set:
             # at capacity, need to evict
-            if len(self.set) > self.capacity:
-                self.set.popitem(last = False)
+            if len(self.set) >= self.capacity:
+                victim = self.set.popitem(last = False)
+                # if dirty
+                if victim[1]:
+                    victim_addr = victim[0]
 
             # insert new line, update lru
-            self.set[key] = 1
+            self.set[key] = dirty
             self.set.move_to_end(key)
-            return False
 
         # hit, update lru
         else:
-            self.set[key] += 1
+            self.set[key] = dirty
             self.set.move_to_end(key)
-            return True
+            hit = True
+
+        return (hit, victim_addr)
 
     def clear(self) -> None:
         self.set.clear()
@@ -57,6 +62,7 @@ def setup_options():
    arg = ArgumentParser() 
    #arg.add_argument("dirpath")
    arg.add_argument("filepath")
+   arg.add_argument("config_path")
    arg.add_argument("set_bits")
    arg.add_argument("associativity", type=int)
 
@@ -121,13 +127,22 @@ def read_file(filename, set_bit_pos, set_bit_len, tag_bit_pos, offset_bit_len, o
 
             #print("Tag Value: ", tag_val)
             # hit
-            if cache[set_index].update(tag_val):
-                #output_file.write(row[0] + ",H\n")    
+            hit, victim_tag = cache[set_index].update(tag_val, True)
+            if hit:
+                output_file.write(row[0] + ",H\n")    
                 # statistics counter
                 hit_ctr += 1
 
             # miss
             else:
+                if (victim_tag >=0):
+                    victim_addr = 0
+                    for i in range(len(set_bit_pos)):
+                        victim_addr += (((set_index >> i ) & 1) << set_bit_pos[i])
+                    for i in range(len(tag_bit_pos)):
+                        victim_addr += (((victim_tag >> i ) & 1) << tag_bit_pos[i])
+                    output_file.write(str(victim_addr) + ",E\n")
+
                 output_file.write(row[0] + ",M\n")    
                 # statistics counters
                 miss_ctr += 1
@@ -269,6 +284,8 @@ if __name__ == "__main__":
     opt = setup_options() 
 
     args = opt.parse_args()
+
+    conf_parser = config.read_config(args.config_path)
 
     cache, num_sets, set_bit_pos, set_bit_len, tag_bit_pos, offset_bit_len = setup_sim()
 
