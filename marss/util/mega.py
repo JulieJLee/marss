@@ -115,7 +115,7 @@ class Cache(LRUSet):
             self.trace.append([addr, access_type, "H"])
             self.hit_ctr += 1
         else: 
-            # if an eviction occurred
+            # eviction needed
             if (victim_tag >= 0):
                 # calculate the address of the eviction victim
                 victim_addr = 0
@@ -281,13 +281,14 @@ def simulate():
             addr = int(row[0])
             access_type = row[1]
             [l2_evict, l2_miss] = l2.access(addr, access_type)
-
-            # if there was an eviction
-            if (l2_evict[1] != "N"):
-                [l3_evict_1, l3_miss_1] = l3.access(l2_evict[0], l2_evict[1])
+                
+            # MARSS handles miss before eviction
             # if there was a miss
             if (l2_miss[1] != "N"):
                 [l3_evict_2, l3_miss_2] = l3.access(l2_miss[0], l2_miss[1])
+            # if there was an eviction
+            if (l2_evict[1] != "N"):
+                [l3_evict_1, l3_miss_1] = l3.access(l2_evict[0], l2_evict[1])
 
 
 def test():
