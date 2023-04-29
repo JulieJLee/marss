@@ -3,7 +3,7 @@
 import csv
 import os, glob
 import numpy as np
-import config
+import configparser
 import matplotlib
 matplotlib.use('Agg')
 
@@ -285,7 +285,9 @@ if __name__ == "__main__":
 
     args = opt.parse_args()
 
-    conf_parser = config.read_config(args.config_path)
+    print(args.config_path)
+
+    config = configparser.ConfigParser()
 
     cache, num_sets, set_bit_pos, set_bit_len, tag_bit_pos, offset_bit_len = setup_sim()
 
