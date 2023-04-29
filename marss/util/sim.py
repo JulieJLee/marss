@@ -3,9 +3,9 @@
 import csv
 import os, glob
 import numpy as np
-import config
+import configparser
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('agg')
 
 import matplotlib.pyplot as plt
 
@@ -70,7 +70,7 @@ def setup_options():
 
 def setup_sim():
    #print("Number of Sets ", num_sets)
-    set_bit_pos = list(map(int, args.set_bits.split(",")))
+    set_bit_pos = list(map(int, config['L2']['SET_BITS'].split(",")))
 
     set_bit_len = len(set_bit_pos)
 
@@ -78,7 +78,7 @@ def setup_sim():
 
     cache = []
     for i in range(num_sets):
-        cache.append(LRUSet(args.associativity))
+        cache.append(LRUSet(int(config['L2']['ASSOC'])))
     
     offset_bit_len = 6
 
@@ -285,7 +285,8 @@ if __name__ == "__main__":
 
     args = opt.parse_args()
 
-    conf_parser = config.read_config(args.config_path)
+    config = configparser.ConfigParser()
+    config.read(args.config_path)
 
     cache, num_sets, set_bit_pos, set_bit_len, tag_bit_pos, offset_bit_len = setup_sim()
 
