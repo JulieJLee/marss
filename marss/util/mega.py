@@ -137,22 +137,17 @@ class Cache(LRUSet):
                 
         return access_lower
         
-    def write_sim(self, app_name: str): 
-        global counter
-        counter = 0
-        sim_output = output_filename(app_name, self.type, "sim", counter, "csv")
-        while os.path.isfile(sim_output):
-            counter += 1
-            sim_output = output_filename(app_name, self.type, "sim", counter, "csv")
+    def write_sim(self, output: str): 
+        sim_output = output_filename(output, self.type, "sim", id, "csv")
         print("Writing output to: ", sim_output)
 
         with open(sim_output, 'w') as sim:
             write = csv.writer(sim)
             write.writerows(self.trace)
-    
-    def write_stat(self, app_name: str):
+     
+    def write_stat(self, output: str):
         # statistics output
-        stat_output = output_filename(app_name, self.type, "stat", counter, "csv")
+        stat_output = output_filename(output, self.type, "stat", id, "csv")
         print("Writing output to: ", stat_output)
         
         total_access = self.hit_ctr + self.miss_ctr
@@ -187,10 +182,52 @@ class Cache(LRUSet):
                 writer.writerow([key, value])
            
 
-    def write_plot(self, app_name: str):
+    def write_plot(self, output: str):
         # plot output
-        plot_output = output_filename(app_name, cache_type, "plot", counter, "png")
+        plot_output = output_filename(output, self.type, "plot", id, "png")
         print("Writing output to: ", plot_output)
+
+        pdf_x, pdf_y = pdf(self.set_arr)
+        sorted_pdf_x, sorted_pdf_y = sorted_pdf(self.set_arr)
+
+        fig, axs = plt.subplots(2, 2, figsize=(16,6))
+        axs[0,0].set_title('PDF')
+        axs[0,0].plot(pdf_x, pdf_y)
+        axs[0,0].set_xlabel('Sets')
+        axs[0,0].set_ylabel('% of Total Cache Misses')
+        axs[0,0].set_xlim([0,pdf_x[-1]])
+        axs[0,0].grid(True)
+
+        axs[0,1].set_title('Sorted PDF')
+        axs[0,1].plot(sorted_pdf_x, sorted_pdf_y)
+        axs[0,1].set_xlabel('Sets Sorted in Descending Order of Misses')
+        axs[0,1].set_ylabel('% of Total Cache Misses')
+        axs[0,1].set_xlim([0,sorted_pdf_x[-1]])
+        axs[0,0].grid(True)
+        axs[0,1].grid(True)
+
+        addr_dict_values = np.array(list(self.addr_dict.values()))
+        pdf_x, pdf_y = pdf(addr_dict_values)
+        sorted_pdf_x, sorted_pdf_y = sorted_pdf(addr_dict_values)
+
+        axs[1,0].set_title('PDF')
+        axs[1,0].plot(pdf_x, pdf_y)
+        axs[1,0].set_xlabel('Addresses')
+        axs[1,0].set_ylabel('% of Total Cache Misses')
+        axs[1,0].set_xlim([0,pdf_x[-1]])
+        axs[1,0].grid(True)
+
+        axs[1,1].set_title('Sorted PDF')
+        axs[1,1].plot(sorted_pdf_x, sorted_pdf_y)
+        axs[1,1].set_xlabel('Addresses Sorted in Descending Order of Misses')
+        axs[1,1].set_ylabel('% of Total Cache Misses')
+        axs[1,1].set_xlim([0,sorted_pdf_x[-1]])
+        axs[1,1].grid(True)
+
+        fig.suptitle(app_name + " " + self.type + " " + str(id))
+        fig.tight_layout()
+        fig.savefig(plot_output)
+        fig.clf() 
 
 
 
@@ -198,6 +235,7 @@ def setup_options():
     arg = ArgumentParser()
     arg.add_argument('trace_path')
     arg.add_argument('config_path')
+    arg.add_argument('output_dirpath')
 
     return arg
 
@@ -212,14 +250,29 @@ def setup_cache():
     l3 = Cache("L3", l3_conf["SET_BITS"], l3_conf["LINE_SIZE"], l3_conf["ASSOC"])
 
 # returns a filename 
-def output_filename(app_name, cache_type, data_type, counter, ext):
-    return app_name + "_" + cache_type + "_" + data_type + "_" + str(counter).zfill(2) + "." + ext
+def output_filename(app_name, cache_type, data_type, id, ext):
+    return app_name + "_" + cache_type + "_" + data_type + "_" + str(id).zfill(2) + "." + ext
 
 # setup the statistics files
-def stats():
+def setup_stat():
+    global id
+    global app_name
     print("Parsing: ", args.trace_path)
 
-    app_name = (os.path.splitext(args.trace_path)[0]).partition('_')[0]
+    # make output directory if it doesn't exist
+    if not os.path.exists(args.output_dirpath):
+        os.makedirs(args.output_dirpath)
+
+    app_name = os.path.splitext(os.path.basename(args.trace_path))[0].partition('_')[0]
+
+    # allocate ID to simulation run
+    id = 0
+    output = app_name + "*" + str(id).zfill(2) + "*"
+    while glob.glob(os.path.join(args.output_dirpath, output)):
+        print(output)
+        id += 1
+        output = app_name + "*" + str(id).zfill(2) + "*"
+
 
 def simulate():
     with open(args.trace_path) as input_trace:
@@ -237,7 +290,6 @@ def simulate():
                 [l3_evict_2, l3_miss_2] = l3.access(l2_miss[0], l2_miss[1])
 
 
-
 def test():
     [l2_evict, l2_miss] = l2.access(0, "R")
     print(l2_evict)
@@ -252,6 +304,21 @@ def test():
     print(l2.trace)
     print(l3.trace)
 
+
+def write_output():
+    output = os.path.join(args.output_dirpath, app_name)
+
+    # write l2 
+    l2.write_sim(output)
+    l2.write_stat(output)
+    l2.write_plot(output)
+
+    # write l3
+    l3.write_sim(output)
+    l3.write_stat(output)
+    l3.write_plot(output)
+
+
 if __name__ == "__main__":
     # parse input arguments
     opt = setup_options()
@@ -264,10 +331,11 @@ if __name__ == "__main__":
     # setup cache
     setup_cache()
 
+    # setup sim
+    setup_stat()
+
     # simulate cache
     simulate()
 
     # statistics parsing
-    #stats()
-    l2.write_sim('sanity')
-    l2.write_stat('sanity')
+    write_output()
