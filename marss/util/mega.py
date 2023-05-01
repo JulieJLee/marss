@@ -16,36 +16,86 @@ from collections import defaultdict
 
 MAX_ADDR_LEN = 40
 
+class mLRUSet:
+    def __init__(self, capacity: int):
+        self.tags = [None] * capacity
+        self.mlru = [0] * capacity
+        self.dirty = [0] * capacity
+        self.capacity = capacity
+
+    def update(self, tag: int, access_type: str) -> (bool, int):
+        hit = False
+        victim_tag = -1
+        victim_way = 0
+
+        # miss
+        if tag not in self.tags:
+            # need to evict
+            if None not in self.tags:
+                # index of victim
+                vicitm_way = self.mlru.index(0)
+                # write-back?
+                if self.dirty[victim_way]:
+                    victim_tag = self.tags[victim_way]
+            else:
+                victim_way = self.tags.index(None)
+
+            way = victim_way
+            
+        # hit
+        else:
+            hit = True
+            way = self.tags.index(tag)
+        
+        # fill in new request
+        self.tags[way] = tag
+        self.mlru[way] = 1
+        if (access_type == "W" or access_type == "U"):
+            self.dirty[way] = 1 
+    
+
+        # deadlock prevention
+        if 0 not in self.mlru:
+            # reset the mrlu 
+            self.mlru = [0] * self.capacity
+            self.mlru[way] = 1
+        
+        
+        return (hit, victim_tag)
+
 class LRUSet:
     def __init__(self, capacity: int):
         self.set = OrderedDict()
         self.capacity = capacity
 
     # return whether latest access was a hit (true)
-    # key = tag, value = dirty
-    def update(self, key: int, dirty: bool) -> (bool, int):
+    def update(self, tag: int, access_type: str) -> (bool, int):
         hit = False
-        victim_addr = -1
+        victim_tag = -1
         # miss
-        if key not in self.set:
+        if tag not in self.set:
             # at capacity, need to evict
             if len(self.set) >= self.capacity:
                 victim = self.set.popitem(last = False)
-                # if dirty
+                # if write
                 if victim[1]:
-                    victim_addr = victim[0]
+                    victim_tag = victim[0]
 
-            # insert new line, update lru
-            self.set[key] = dirty
-            self.set.move_to_end(key)
+            # update dirty bit
+            if (access_type == "W" or access_type == "U"):    
+                self.set[tag] = 1
+
+            # allocate line
+            self.set.move_to_end(tag)
 
         # hit, update lru
         else:
-            self.set[key] = dirty
-            self.set.move_to_end(key)
+            if (access_type == "W" or access_type == "U"):    
+                self.set[tag] = 0
+            self.set.move_to_end(tag)
             hit = True
 
-        return (hit, victim_addr)
+        return (hit, victim_tag)
 
     def clear(self) -> None:
         self.set.clear()
@@ -71,7 +121,7 @@ def quartile(cdf):
     third = (sum(cdf <= 75) / len(cdf)) * 100
     return first, second, third
  
-class Cache(LRUSet):
+class Cache(mLRUSet):
     def __init__(self, cache_type: str, set_bit_pos: str, line_size: str, associativity: str):
         # initialize cache level
         self.type = cache_type
@@ -82,7 +132,7 @@ class Cache(LRUSet):
         self.num_sets = 2 ** self.set_bit_len
         self.cache = []
         for i in range(self.num_sets):
-            self.cache.append(LRUSet(int(associativity)))
+            self.cache.append(mLRUSet(int(associativity)))
         self.offset_bit_len = int(log(int(line_size)) / log(2))
         bit_pos_without_offset = set(range(self.offset_bit_len, MAX_ADDR_LEN))
         self.tag_bit_pos = list(set(self.set_bit_pos) ^ bit_pos_without_offset)
@@ -112,8 +162,10 @@ class Cache(LRUSet):
         hit, victim_tag = self.cache[set_index].update(tag_val, is_write)
 
         if hit:
-            self.trace.append([addr, access_type, "H"])
-            self.hit_ctr += 1
+            # only log for R/W requests
+            if (access_type != "U"):
+                self.trace.append([addr, access_type, "H"])
+                self.hit_ctr += 1
         else: 
             # eviction needed
             if (victim_tag >= 0):
@@ -127,13 +179,14 @@ class Cache(LRUSet):
                 access_lower[0] = (victim_addr, "W")
 
 
-            self.trace.append([addr, access_type, "M"])
             access_lower[1] = (addr, access_type)
 
-            # statistics logging 
-            self.miss_ctr += 1
-            self.set_arr[set_index] += 1
-            self.addr_dict[addr] += 1
+            if (access_type != "U"): 
+                self.trace.append([addr, access_type, "M"])
+                # statistics logging 
+                self.miss_ctr += 1
+                self.set_arr[set_index] += 1
+                self.addr_dict[addr] += 1
                 
         return access_lower
         
@@ -269,7 +322,6 @@ def setup_stat():
     id = 0
     output = app_name + "*" + str(id).zfill(2) + "*"
     while glob.glob(os.path.join(args.output_dirpath, output)):
-        print(output)
         id += 1
         output = app_name + "*" + str(id).zfill(2) + "*"
 
@@ -281,6 +333,8 @@ def simulate():
             addr = int(row[0])
             access_type = row[1]
             [l2_evict, l2_miss] = l2.access(addr, access_type)
+            # print("t: ", l2.cache[0].tags)
+            # print(l2.cache[0].mlru)
                 
             # MARSS handles miss before eviction
             # if there was a miss
