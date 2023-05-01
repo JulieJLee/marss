@@ -92,7 +92,7 @@ class LRUSet:
         # hit, update lru
         else:
             if (access_type == "W" or access_type == "U"):    
-                self.set[tag] = 0
+                self.set[tag] = 1
             self.set.move_to_end(tag)
             hit = True
 
@@ -159,13 +159,12 @@ class Cache(LRUSet):
         tag_val = self.hash_address(addr, self.tag_bit_pos)
 
         # access cache
-        is_write = True if access_type == "W" else False
-        hit, victim_tag = self.cache[set_index].update(tag_val, is_write)
+        hit, victim_tag = self.cache[set_index].update(tag_val, access_type)
 
         if hit:
+            self.trace.append([addr, access_type, "H"])
             # only log for R/W requests
             if (access_type != "U"):
-                self.trace.append([addr, access_type, "H"])
                 self.hit_ctr += 1
         else: 
             # eviction needed
@@ -177,14 +176,15 @@ class Cache(LRUSet):
                 for i in range(len(self.tag_bit_pos)): 
                     victim_addr += (((victim_tag >> i ) & 1) << self.tag_bit_pos[i])
 
-                access_lower[0] = (victim_addr, "W")
+                access_lower[1] = (victim_addr, "U")
+                self.trace.append([victim_addr, "U", "M"])
 
 
-            access_lower[1] = (addr, access_type)
+            access_lower[0] = (addr, access_type)
+            self.trace.append([addr, access_type, "M"])
 
+            # only log for R/W requests
             if (access_type != "U"): 
-                self.trace.append([addr, access_type, "M"])
-                # statistics logging 
                 self.miss_ctr += 1
                 self.set_arr[set_index] += 1
                 self.addr_dict[addr] += 1
@@ -333,17 +333,17 @@ def simulate():
         for row in csv_reader:
             addr = int(row[0])
             access_type = row[1]
-            [l2_evict, l2_miss] = l2.access(addr, access_type)
+            [l2_miss, l2_evict] = l2.access(addr, access_type)
             # print("t: ", l2.cache[0].tags)
             # print(l2.cache[0].mlru)
                 
             # MARSS handles miss before eviction
             # if there was a miss
             if (l2_miss[1] != "N"):
-                [l3_evict_2, l3_miss_2] = l3.access(l2_miss[0], l2_miss[1])
+                [l3_miss_2, l3_evict_2] = l3.access(l2_miss[0], l2_miss[1])
             # if there was an eviction
             if (l2_evict[1] != "N"):
-                [l3_evict_1, l3_miss_1] = l3.access(l2_evict[0], l2_evict[1])
+                [l3_miss_1, l3_evict_1] = l3.access(l2_evict[0], l2_evict[1])
 
 
 def test():
