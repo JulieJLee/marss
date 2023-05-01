@@ -81,6 +81,7 @@ class LRUSet:
                 if victim[1]:
                     victim_tag = victim[0]
 
+            self.set[tag] = 0
             # update dirty bit
             if (access_type == "W" or access_type == "U"):    
                 self.set[tag] = 1
@@ -121,7 +122,7 @@ def quartile(cdf):
     third = (sum(cdf <= 75) / len(cdf)) * 100
     return first, second, third
  
-class Cache(mLRUSet):
+class Cache(LRUSet):
     def __init__(self, cache_type: str, set_bit_pos: str, line_size: str, associativity: str):
         # initialize cache level
         self.type = cache_type
@@ -132,7 +133,7 @@ class Cache(mLRUSet):
         self.num_sets = 2 ** self.set_bit_len
         self.cache = []
         for i in range(self.num_sets):
-            self.cache.append(mLRUSet(int(associativity)))
+            self.cache.append(LRUSet(int(associativity)))
         self.offset_bit_len = int(log(int(line_size)) / log(2))
         bit_pos_without_offset = set(range(self.offset_bit_len, MAX_ADDR_LEN))
         self.tag_bit_pos = list(set(self.set_bit_pos) ^ bit_pos_without_offset)
