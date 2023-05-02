@@ -365,12 +365,12 @@ def write_output():
     output = os.path.join(args.output_dirpath, app_name)
 
     # write l2 
-    l2.write_sim(output)
+    #l2.write_sim(output)
     l2.write_stat(output)
     l2.write_plot(output)
 
     # write l3
-    l3.write_sim(output)
+    #l3.write_sim(output)
     l3.write_stat(output)
     l3.write_plot(output)
 
