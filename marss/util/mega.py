@@ -295,10 +295,17 @@ def setup_options():
 
 # instantiate the cache levels
 def setup_cache():
-    # global l1
+    global l1d
+    l1_conf = config["L1"]
+    l1d = Cache("L1_D", l1_conf["SET_BITS"], l1_conf["LINE_SIZE"], l1_conf["ASSOC"])
+    
+    global l1i
+    l1i = Cache("L1_I", l1_conf["SET_BITS"], l1_conf["LINE_SIZE"], l1_conf["ASSOC"])
+
     global l2
     l2_conf = config["L2"]
     l2 = Cache("L2", l2_conf["SET_BITS"], l2_conf["LINE_SIZE"], l2_conf["ASSOC"])
+
     global l3
     l3_conf = config["L3"]
     l3 = Cache("L3", l3_conf["SET_BITS"], l3_conf["LINE_SIZE"], l3_conf["ASSOC"])
@@ -333,19 +340,54 @@ def simulate():
         for row in csv_reader:
             addr = int(row[0])
             access_type = row[1]
-            [l2_miss, l2_evict] = l2.access(addr, access_type)
+            is_instruction = True if row[2] == "I" else False
+            #print("Address: " + str(addr)  + "Instruction type: " + row[2])
+            
+            if (is_instruction):
+                [l1i_miss, l1i_evict] = l1i.access(addr, access_type)
+
+                if (l1i_miss[1] != "N"):
+                    [l2_miss, l2_evict] = l2.access(l1i_miss[0], l1i_miss[1])
+
+                    if (l2_miss[1] != "N"):
+                        [l3_miss_2, l3_evict_2] = l3.access(l2_miss[0], l2_miss[1])
+                    if (l2_evict[1] != "N"):
+                        [l3_miss, l3_evict] = l3.access(l2_evict[0], l2_evict[1])
+
+                if (l1i_evict[1] != "N"):
+                    [l2_miss, l2_evict] = l2.access(l1i_evict[0], l1i_evict[1])
+
+                    if (l2_miss[1] != "N"):
+                        [l3_miss_2, l3_evict_2] = l3.access(l2_miss[0], l2_miss[1])
+                    if (l2_evict[1] != "N"):
+                        [l3_miss, l3_evict] = l3.access(l2_evict[0], l2_evict[1])
+
+            else:
+                [l1d_miss, l1d_evict] = l1d.access(addr, access_type)
+
+                if (l1d_miss[1] != "N"):
+                    [l2_miss, l2_evict] = l2.access(l1d_miss[0], l1d_miss[1])
+
+                    if (l2_miss[1] != "N"):
+                        [l3_miss_2, l3_evict_2] = l3.access(l2_miss[0], l2_miss[1])
+                    if (l2_evict[1] != "N"):
+                        [l3_miss, l3_evict] = l3.access(l2_evict[0], l2_evict[1])
+
+                if (l1d_evict[1] != "N"):
+                    [l2_miss, l2_evict] = l2.access(l1d_evict[0], l1d_evict[1])
+
+                    if (l2_miss[1] != "N"):
+                        [l3_miss_2, l3_evict_2] = l3.access(l2_miss[0], l2_miss[1])
+                    if (l2_evict[1] != "N"):
+                        [l3_miss, l3_evict] = l3.access(l2_evict[0], l2_evict[1])
+
+
             # print("t: ", l2.cache[0].tags)
             # print(l2.cache[0].mlru)
                 
             # MARSS handles miss before eviction
             # if there was a miss
-            if (l2_miss[1] != "N"):
-                [l3_miss_2, l3_evict_2] = l3.access(l2_miss[0], l2_miss[1])
-            # if there was an eviction
-            if (l2_evict[1] != "N"):
-                [l3_miss_1, l3_evict_1] = l3.access(l2_evict[0], l2_evict[1])
-
-
+ 
 def test():
     [l2_evict, l2_miss] = l2.access(0, "R")
     print(l2_evict)
@@ -364,13 +406,23 @@ def test():
 def write_output():
     output = os.path.join(args.output_dirpath, app_name)
 
+    # write l1i
+    l1i.write_sim(output)
+    l1i.write_stat(output)
+    l1i.write_plot(output)
+
+    # write l1d
+    l1d.write_sim(output)
+    l1d.write_stat(output)
+    l1d.write_plot(output)
+
     # write l2 
-    #l2.write_sim(output)
+    l2.write_sim(output)
     l2.write_stat(output)
     l2.write_plot(output)
 
     # write l3
-    #l3.write_sim(output)
+    l3.write_sim(output)
     l3.write_stat(output)
     l3.write_plot(output)
 
