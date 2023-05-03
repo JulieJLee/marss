@@ -72,22 +72,28 @@ class LRUSet:
     def update(self, tag: int, access_type: str) -> (bool, int):
         hit = False
         victim_tag = -1
+
         # miss
         if tag not in self.set:
-            # at capacity, need to evict
-            if len(self.set) >= self.capacity:
-                victim = self.set.popitem(last = False)
-                # if write
-                if victim[1]:
-                    victim_tag = victim[0]
+            # if an update request misses in the cache,
+            # it should be forwarded to a lower level
+            if (access_type == "U"):
+                return (hit, victim_tag)
+            else:
+                # at capacity, need to evict
+                if len(self.set) >= self.capacity:
+                    victim = self.set.popitem(last = False)
+                    # if write
+                    if victim[1]:
+                        victim_tag = victim[0]
 
-            self.set[tag] = 0
-            # update dirty bit
-            if (access_type == "W" or access_type == "U"):    
-                self.set[tag] = 1
+                self.set[tag] = 0
+                # update dirty bit
+                if (access_type == "W"):
+                    self.set[tag] = 1
 
-            # allocate line
-            self.set.move_to_end(tag)
+                # allocate line
+                self.set.move_to_end(tag)
 
         # hit, update lru
         else:
@@ -167,6 +173,19 @@ class Cache(LRUSet):
             if (access_type != "U"):
                 self.hit_ctr += 1
         else: 
+            self.trace.append([addr, access_type, "M"])
+            # this is to make sure that only L1 marks a line as modified
+            if ("L1" in self.type):
+                access_type = "R"
+
+            access_lower[0] = (addr, access_type)
+
+            # only log for R/W requests
+            if (access_type != "U"): 
+                self.miss_ctr += 1
+                self.set_arr[set_index] += 1
+                self.addr_dict[addr] += 1
+
             # eviction needed
             if (victim_tag >= 0):
                 # calculate the address of the eviction victim
@@ -177,17 +196,6 @@ class Cache(LRUSet):
                     victim_addr += (((victim_tag >> i ) & 1) << self.tag_bit_pos[i])
 
                 access_lower[1] = (victim_addr, "U")
-                self.trace.append([victim_addr, "U", "M"])
-
-
-            access_lower[0] = (addr, access_type)
-            self.trace.append([addr, access_type, "M"])
-
-            # only log for R/W requests
-            if (access_type != "U"): 
-                self.miss_ctr += 1
-                self.set_arr[set_index] += 1
-                self.addr_dict[addr] += 1
                 
         return access_lower
         
@@ -407,22 +415,22 @@ def write_output():
     output = os.path.join(args.output_dirpath, app_name)
 
     # write l1i
-    l1i.write_sim(output)
+    #l1i.write_sim(output)
     l1i.write_stat(output)
     l1i.write_plot(output)
 
     # write l1d
-    l1d.write_sim(output)
+    #l1d.write_sim(output)
     l1d.write_stat(output)
     l1d.write_plot(output)
 
     # write l2 
-    l2.write_sim(output)
+    #l2.write_sim(output)
     l2.write_stat(output)
     l2.write_plot(output)
 
     # write l3
-    l3.write_sim(output)
+    #l3.write_sim(output)
     l3.write_stat(output)
     l3.write_plot(output)
 
