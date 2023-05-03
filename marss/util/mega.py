@@ -31,16 +31,20 @@ class mLRUSet:
         # miss
         if tag not in self.tags:
             # need to evict
-            if None not in self.tags:
-                # index of victim
-                vicitm_way = self.mlru.index(0)
-                # write-back?
-                if self.dirty[victim_way]:
-                    victim_tag = self.tags[victim_way]
-            else:
-                victim_way = self.tags.index(None)
+            if (access_type == "U"):
+                return (hit, victim_tag)
 
-            way = victim_way
+            else:
+                if None not in self.tags:
+                    # index of victim
+                    victim_way = self.mlru.index(0)
+                    # write-back?
+                    if self.dirty[victim_way]:
+                        victim_tag = self.tags[victim_way]
+                else:
+                    victim_way = self.tags.index(None)
+
+                way = victim_way
             
         # hit
         else:
